@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecureNet – Panel Admin</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f4f6f9;padding:20px}
+.wrap{max-width:820px;margin:0 auto}
+#login{display:flex;align-items:center;justify-content:center;min-height:80vh}
+.login-box{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:2.5rem 2rem;width:100%;max-width:360px;text-align:center}
+.login-box .logo{width:64px;height:64px;background:#E6F1FB;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 1rem}
+.login-box h2{font-size:20px;font-weight:700;color:#1a202c;margin-bottom:.3rem}
+.login-box p{font-size:13px;color:#666;margin-bottom:1.5rem}
+.login-box input{width:100%;padding:10px 14px;border:1px solid #d0d7e2;border-radius:8px;font-size:15px;margin-bottom:10px;outline:none}
+.login-box input:focus{border-color:#378ADD;box-shadow:0 0 0 3px rgba(55,138,221,.15)}
+.btn-login{width:100%;padding:12px;background:#185FA5;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-login:hover{background:#0C447C}
+.err{color:#c0392b;font-size:13px;margin-top:8px;display:none}
+#panel{display:none}
+.topbar{background:linear-gradient(135deg,#0C447C,#185FA5);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-logo{width:44px;height:44px;background:rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.topbar h1{font-size:18px;font-weight:700}
+.topbar p{font-size:12px;opacity:.8}
+.btn-logout{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;font-weight:600}
+.btn-logout:hover{background:rgba(255,255,255,.25)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem}
+.stat{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:.9rem 1rem;text-align:center}
+.stat .num{font-size:26px;font-weight:700;margin-bottom:3px}
+.stat .lbl{font-size:12px;color:#666}
+.stat.pend .num{color:#854F0B}
+.stat.conf .num{color:#27500A}
+.stat.rech .num{color:#a32d2d}
+.stat.tot  .num{color:#185FA5}
+.filters{display:flex;gap:8px;margin-bottom:1.2rem;flex-wrap:wrap}
+.fbtn{padding:7px 14px;border:1px solid #d0d7e2;border-radius:8px;background:#fff;font-size:13px;font-weight:600;cursor:pointer;color:#555;transition:all .15s}
+.fbtn.active{background:#E6F1FB;border-color:#378ADD;color:#0C447C}
+.cita{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1rem 1.25rem;margin-bottom:10px;transition:border-color .15s}
+.cita:hover{border-color:#B5D4F4}
+.cita-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.cita-main{flex:1}
+.cita-ref{font-size:11px;color:#888;font-weight:600;margin-bottom:4px;letter-spacing:.05em}
+.cita-servicio{font-size:15px;font-weight:700;color:#1a202c;margin-bottom:5px}
+.cita-meta{font-size:13px;color:#555;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.cita-meta i{font-size:14px;color:#888}
+.sep{color:#ccc}
+.badge{font-size:11px;padding:4px 10px;border-radius:99px;font-weight:700;white-space:nowrap;align-self:flex-start}
+.badge.pendiente{background:#FAEEDA;color:#633806}
+.badge.confirmada{background:#EAF3DE;color:#27500A}
+.badge.rechazada{background:#FCEBEB;color:#a32d2d}
+.cita-desc{font-size:13px;color:#555;margin-top:8px;padding:8px 10px;background:#f8fafc;border-radius:6px;border-left:3px solid #B5D4F4}
+.cita-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.btn-conf{padding:7px 16px;background:#185FA5;color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer}
+.btn-conf:hover{background:#0C447C}
+.btn-rech{padding:7px 16px;background:#fff;color:#a32d2d;border:1px solid #f09595;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer}
+.btn-rech:hover{background:#FCEBEB}
+.btn-pend{padding:7px 16px;background:#fff;color:#633806;border:1px solid #FAC775;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer}
+.btn-del{padding:7px 12px;background:#fff;color:#888;border:1px solid #e2e8f0;border-radius:7px;font-size:13px;cursor:pointer}
+.btn-del:hover{color:#c0392b;border-color:#f09595}
+.empty{text-align:center;padding:3rem;color:#aaa;font-size:14px}
+.empty i{font-size:40px;display:block;margin-bottom:.5rem;color:#d0d7e2}
+.refresh-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.refresh-bar span{font-size:13px;color:#888}
+.btn-refresh{padding:6px 12px;background:#fff;border:1px solid #d0d7e2;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;color:#555;display:flex;align-items:center;gap:5px}
+.btn-refresh:hover{border-color:#378ADD;color:#185FA5}
+.loading{text-align:center;padding:2rem;color:#888;font-size:14px}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="login-box">
+    <div class="logo"><i class="ti ti-shield-lock" style="color:#185FA5"></i></div>
+    <h2>SecureNet Admin</h2>
+    <p>Accede para gestionar las citas</p>
+    <input type="text" id="user" placeholder="Usuario" onkeydown="if(event.key==='Enter')acceder()">
+    <input type="password" id="pass" placeholder="Contrasena" onkeydown="if(event.key==='Enter')acceder()">
+    <button class="btn-login" onclick="acceder()"><i class="ti ti-login"></i> &nbsp;Entrar</button>
+    <p class="err" id="err">Usuario o contrasena incorrectos</p>
+  </div>
+</div>
+
+<div id="panel">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo"><i class="ti ti-layout-dashboard" style="color:#fff"></i></div>
+      <div><h1>Panel de citas</h1><p>SecureNet Redes &amp; Seguridad</p></div>
+    </div>
+    <button class="btn-logout" onclick="salir()"><i class="ti ti-logout"></i> Salir</button>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="filters">
+    <button class="fbtn active" onclick="filtrar('todas',this)">Todas</button>
+    <button class="fbtn" onclick="filtrar('pendiente',this)">Pendientes</button>
+    <button class="fbtn" onclick="filtrar('confirmada',this)">Confirmadas</button>
+    <button class="fbtn" onclick="filtrar('rechazada',this)">Rechazadas</button>
+  </div>
+
+  <div class="refresh-bar">
+    <span id="last-refresh"></span>
+    <button class="btn-refresh" onclick="cargar()"><i class="ti ti-refresh"></i> Actualizar</button>
+  </div>
+
+  <div id="lista"></div>
+</div>
+
+<script>
+const CREDS  = { usuario: 'admin', pass: 'securenet2024' };
+const API_KEY = '$2a$10$7BpYWIr4mOgO6l7PBTXpVutxAfi2qBJY6MeL/KCjSYTIva.5vpvUm';
+const BIN_ID  = '6a29cd95da38895dfea9493a';
+const BASE    = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
+
+let filtroActual = 'todas';
+let citasData = [];
+
+async function getCitas() {
+  const r = await fetch(BASE + '/latest', { headers: { 'X-Master-Key': API_KEY } });
+  const d = await r.json();
+  citasData = d.record.citas || [];
+  return citasData;
+}
+
+async function saveCitas(citas) {
+  await fetch(BASE, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+    body: JSON.stringify({ citas })
+  });
+}
+
+function acceder() {
+  const u = document.getElementById('user').value.trim();
+  const p = document.getElementById('pass').value;
+  if (u === CREDS.usuario && p === CREDS.pass) {
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('panel').style.display = 'block';
+    cargar();
+    setInterval(cargar, 30000);
+  } else {
+    document.getElementById('err').style.display = 'block';
+  }
+}
+
+function salir() {
+  document.getElementById('login').style.display = 'flex';
+  document.getElementById('panel').style.display = 'none';
+  document.getElementById('pass').value = '';
+}
+
+function filtrar(f, btn) {
+  filtroActual = f;
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLista();
+}
+
+async function cargar() {
+  document.getElementById('lista').innerHTML = '<div class="loading"><i class="ti ti-loader"></i> Cargando citas...</div>';
+  try {
+    await getCitas();
+    renderStats();
+    renderLista();
+    const now = new Date();
+    document.getElementById('last-refresh').textContent =
+      'Actualizado: ' + now.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
+  } catch(e) {
+    document.getElementById('lista').innerHTML = '<div class="empty"><i class="ti ti-wifi-off"></i>Error al cargar. Comprueba la conexion.</div>';
+  }
+}
+
+function renderStats() {
+  const pend = citasData.filter(c => c.estado === 'pendiente').length;
+  const conf = citasData.filter(c => c.estado === 'confirmada').length;
+  const rech = citasData.filter(c => c.estado === 'rechazada').length;
+  document.getElementById('stats').innerHTML =
+    '<div class="stat tot"><div class="num">' + citasData.length + '</div><div class="lbl">Total citas</div></div>' +
+    '<div class="stat pend"><div class="num">' + pend + '</div><div class="lbl">Pendientes</div></div>' +
+    '<div class="stat conf"><div class="num">' + conf + '</div><div class="lbl">Confirmadas</div></div>' +
+    '<div class="stat rech"><div class="num">' + rech + '</div><div class="lbl">Rechazadas</div></div>';
+}
+
+function renderLista() {
+  let citas = [...citasData];
+  citas.sort((a, b) => {
+    if (a.estado === 'pendiente' && b.estado !== 'pendiente') return -1;
+    if (b.estado === 'pendiente' && a.estado !== 'pendiente') return 1;
+    return (a.fecha + a.hora).localeCompare(b.fecha + b.hora);
+  });
+  if (filtroActual !== 'todas') citas = citas.filter(c => c.estado === filtroActual);
+  const lista = document.getElementById('lista');
+  if (!citas.length) {
+    lista.innerHTML = '<div class="empty"><i class="ti ti-calendar-off"></i>No hay citas ' + (filtroActual === 'todas' ? 'registradas' : filtroActual + 's') + '</div>';
+    return;
+  }
+  lista.innerHTML = citas.map(c => {
+    const fecha = formatFecha(c.fecha);
+    const acciones = c.estado === 'pendiente'
+      ? '<button class="btn-conf" onclick="cambiar(\'' + c.id + '\',\'confirmada\')"><i class="ti ti-check"></i> Confirmar</button><button class="btn-rech" onclick="cambiar(\'' + c.id + '\',\'rechazada\')"><i class="ti ti-x"></i> Rechazar</button>'
+      : '<button class="btn-pend" onclick="cambiar(\'' + c.id + '\',\'pendiente\')"><i class="ti ti-clock"></i> Marcar pendiente</button>';
+    return '<div class="cita">' +
+      '<div class="cita-top">' +
+        '<div class="cita-main">' +
+          '<div class="cita-ref">' + c.id + '</div>' +
+          '<div class="cita-servicio">' + c.servicio + '</div>' +
+          '<div class="cita-meta"><i class="ti ti-user"></i>' + c.nombre + (c.empresa ? ' — ' + c.empresa : '') + '<span class="sep">|</span><i class="ti ti-calendar"></i>' + fecha + '<span class="sep">·</span><i class="ti ti-clock"></i>' + c.hora + ' h</div>' +
+          '<div class="cita-meta" style="margin-top:4px"><i class="ti ti-phone"></i>' + c.telefono + '<span class="sep">|</span><i class="ti ti-mail"></i>' + c.email + '</div>' +
+          (c.descripcion ? '<div class="cita-desc">' + c.descripcion + '</div>' : '') +
+        '</div>' +
+        '<span class="badge ' + c.estado + '">' + c.estado.charAt(0).toUpperCase() + c.estado.slice(1) + '</span>' +
+      '</div>' +
+      '<div class="cita-actions">' + acciones + '<button class="btn-del" onclick="eliminar(\'' + c.id + '\')" title="Eliminar"><i class="ti ti-trash"></i></button></div>' +
+    '</div>';
+  }).join('');
+}
+
+async function cambiar(id, nuevo) {
+  const citas = await getCitas();
+  const i = citas.findIndex(c => c.id === id);
+  if (i > -1) { citas[i].estado = nuevo; await saveCitas(citas); await cargar(); }
+}
+
+async function eliminar(id) {
+  if (!confirm('Eliminar esta cita definitivamente?')) return;
+  const citas = await getCitas();
+  await saveCitas(citas.filter(c => c.id !== id));
+  await cargar();
+}
+
+function formatFecha(f) {
+  if (!f) return '';
+  const d = new Date(f + 'T12:00:00');
+  return d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+</script>
+</body>
+</html>

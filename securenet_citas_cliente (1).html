@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecureNet – Solicitar Cita</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f4f6f9;padding:20px}
+.wrap{max-width:660px;margin:0 auto}
+.header{background:linear-gradient(135deg,#0C447C,#185FA5);border-radius:12px;padding:1.5rem 2rem;margin-bottom:1.5rem;color:#fff;display:flex;align-items:center;gap:1rem}
+.logo-icon{width:52px;height:52px;background:rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.header h1{font-size:22px;font-weight:700;margin-bottom:3px}
+.header p{font-size:13px;opacity:.85}
+.info-bar{background:#E6F1FB;border:1px solid #B5D4F4;border-radius:8px;padding:10px 14px;font-size:13px;color:#0C447C;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1.5rem;margin-bottom:1rem}
+.card h2{font-size:15px;font-weight:700;color:#1a202c;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg{display:flex;flex-direction:column;gap:6px}
+.fg.full{grid-column:1/-1}
+label{font-size:12px;color:#555;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+input,select,textarea{width:100%;padding:9px 12px;border:1px solid #d0d7e2;border-radius:8px;font-size:14px;background:#fff;color:#1a202c;outline:none}
+input:focus,select:focus,textarea:focus{border-color:#378ADD;box-shadow:0 0 0 3px rgba(55,138,221,.15)}
+textarea{resize:vertical;min-height:80px}
+.time-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin-top:8px}
+.slot{padding:9px;border:1px solid #d0d7e2;border-radius:8px;font-size:13px;text-align:center;cursor:pointer;background:#fff;color:#1a202c;transition:all .15s}
+.slot:hover{border-color:#378ADD;color:#185FA5}
+.slot.sel{background:#E6F1FB;border-color:#378ADD;color:#0C447C;font-weight:700}
+.slot.taken{background:#f1f3f5;color:#bbb;cursor:not-allowed;text-decoration:line-through}
+.btn{width:100%;padding:13px;background:#185FA5;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-top:1rem;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{background:#0C447C}
+.btn:disabled{background:#aaa;cursor:not-allowed}
+.ok{display:none;background:#EAF3DE;border:1px solid #C0DD97;border-radius:8px;padding:1.2rem 1.5rem;color:#27500A;font-size:14px;margin-top:1rem;text-align:center;line-height:1.8}
+.err-msg{display:none;background:#FCEBEB;border:1px solid #f09595;border-radius:8px;padding:10px 14px;color:#a32d2d;font-size:13px;margin-top:1rem}
+@media(max-width:480px){.grid{grid-template-columns:1fr}.fg.full{grid-column:1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="logo-icon"><i class="ti ti-shield-lock" style="color:#fff"></i></div>
+    <div><h1>SecureNet</h1><p>Redes &amp; Seguridad &nbsp;·&nbsp; Solicitar cita</p></div>
+  </div>
+
+  <div class="info-bar">
+    <i class="ti ti-clock"></i>
+    Horario: <strong>&nbsp;lunes a sábado, 9:00 – 13:30 h</strong>
+  </div>
+
+  <div class="card">
+    <h2><i class="ti ti-user"></i> Datos de contacto</h2>
+    <div class="grid">
+      <div class="fg"><label>Nombre *</label><input id="nombre" type="text" placeholder="Tu nombre completo"></div>
+      <div class="fg"><label>Empresa</label><input id="empresa" type="text" placeholder="Opcional"></div>
+      <div class="fg"><label>Teléfono *</label><input id="telefono" type="tel" placeholder="+34 600 000 000"></div>
+      <div class="fg"><label>Email *</label><input id="email" type="email" placeholder="correo@ejemplo.com"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><i class="ti ti-settings"></i> Tipo de proyecto</h2>
+    <div class="grid">
+      <div class="fg full">
+        <label>Servicio *</label>
+        <select id="servicio">
+          <option value="">— Selecciona un servicio —</option>
+          <option>Presupuesto instalación de red</option>
+          <option>Auditoría de seguridad</option>
+          <option>Configuración de firewall / VPN</option>
+          <option>Videovigilancia / CCTV</option>
+          <option>Mantenimiento y soporte técnico</option>
+          <option>Consultoría de infraestructura</option>
+          <option>Otro / varios servicios</option>
+        </select>
+      </div>
+      <div class="fg full">
+        <label>Descripción del proyecto</label>
+        <textarea id="descripcion" placeholder="Cuéntanos qué necesitas..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><i class="ti ti-calendar"></i> Día y hora</h2>
+    <div class="fg full" style="margin-bottom:1rem">
+      <label>Fecha * (lunes – sábado)</label>
+      <input id="fecha" type="date" onchange="updateSlots()">
+    </div>
+    <label>Hora disponible *</label>
+    <div class="time-grid" id="tgrid">
+      <p style="font-size:13px;color:#888;grid-column:1/-1">Selecciona primero una fecha.</p>
+    </div>
+  </div>
+
+  <button class="btn" id="btnEnviar" onclick="enviar()">
+    <i class="ti ti-send"></i> Solicitar cita
+  </button>
+  <div class="ok" id="ok">
+    <strong style="font-size:16px">&#10004; ¡Solicitud enviada!</strong><br>
+    Nos pondremos en contacto contigo para confirmar la cita.<br>
+    <small style="opacity:.8">Referencia: <span id="ref"></span></small>
+  </div>
+  <div class="err-msg" id="errmsg">
+    Ha ocurrido un error al enviar. Por favor inténtalo de nuevo.
+  </div>
+</div>
+
+<script>
+const API_KEY = '$2a$10$7BpYWIr4mOgO6l7PBTXpVutxAfi2qBJY6MeL/KCjSYTIva.5vpvUm';
+const BIN_ID  = '6a29cd95da38895dfea9493a';
+const BASE    = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
+
+const SLOTS = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30'];
+let selectedSlot = '';
+let citasCache = [];
+
+async function getCitas() {
+  try {
+    const r = await fetch(BASE + '/latest', { headers: { 'X-Master-Key': API_KEY } });
+    const d = await r.json();
+    citasCache = d.record.citas || [];
+    return citasCache;
+  } catch { return citasCache; }
+}
+
+async function saveCitas(citas) {
+  await fetch(BASE, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+    body: JSON.stringify({ citas })
+  });
+}
+
+function getTaken(fecha) {
+  return citasCache.filter(c => c.fecha === fecha && c.estado !== 'rechazada').map(c => c.hora);
+}
+
+async function updateSlots() {
+  const v = document.getElementById('fecha').value;
+  const g = document.getElementById('tgrid');
+  selectedSlot = '';
+  if (!v) { g.innerHTML = '<p style="font-size:13px;color:#888;grid-column:1/-1">Selecciona primero una fecha.</p>'; return; }
+  const d = new Date(v + 'T12:00:00');
+  if (d.getDay() === 0) { g.innerHTML = '<p style="font-size:13px;color:#c0392b;grid-column:1/-1">Los domingos no hay atencion. Elige otro dia.</p>'; return; }
+  g.innerHTML = '<p style="font-size:13px;color:#888;grid-column:1/-1">Cargando horarios...</p>';
+  await getCitas();
+  const taken = getTaken(v);
+  g.innerHTML = SLOTS.map(s => {
+    const t = taken.includes(s);
+    return '<button class="slot' + (t ? ' taken' : '') + '" ' + (t ? 'disabled title="Ocupado"' : 'onclick="pick(this,\'' + s + '\')"') + '>' + s + '</button>';
+  }).join('');
+}
+
+function pick(el, s) {
+  document.querySelectorAll('.slot').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel'); selectedSlot = s;
+}
+
+async function enviar() {
+  const nombre   = document.getElementById('nombre').value.trim();
+  const email    = document.getElementById('email').value.trim();
+  const telefono = document.getElementById('telefono').value.trim();
+  const servicio = document.getElementById('servicio').value;
+  const fecha    = document.getElementById('fecha').value;
+  if (!nombre || !email || !telefono || !servicio || !fecha || !selectedSlot) {
+    alert('Completa todos los campos obligatorios (*) y selecciona una hora.');
+    return;
+  }
+  const btn = document.getElementById('btnEnviar');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader"></i> Enviando...';
+  document.getElementById('errmsg').style.display = 'none';
+  try {
+    const citas = await getCitas();
+    const ref = 'SN-' + Date.now().toString(36).toUpperCase();
+    citas.push({
+      id: ref,
+      nombre,
+      empresa: document.getElementById('empresa').value.trim(),
+      email, telefono, servicio,
+      descripcion: document.getElementById('descripcion').value.trim(),
+      fecha, hora: selectedSlot, estado: 'pendiente',
+      creada: new Date().toISOString()
+    });
+    await saveCitas(citas);
+    document.getElementById('ref').textContent = ref;
+    document.getElementById('ok').style.display = 'block';
+    btn.style.display = 'none';
+  } catch(e) {
+    document.getElementById('errmsg').style.display = 'block';
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-send"></i> Solicitar cita';
+  }
+}
+
+const h = new Date(), p = n => String(n).padStart(2,'0');
+document.getElementById('fecha').min = h.getFullYear() + '-' + p(h.getMonth()+1) + '-' + p(h.getDate());
+</script>
+</body>
+</html>
